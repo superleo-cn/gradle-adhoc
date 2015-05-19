@@ -12,5 +12,6 @@ public class MyUtil {
 
     public static void main(String [] args){
         System.out.println(MyUtil.class.getResource("/aa.xml").getPath());
+        System.out.println("===");
     }
 }
