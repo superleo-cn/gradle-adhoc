@@ -1,0 +1,72 @@
+group 'com.leo'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+// if your gradle project is not standard, please change the sourceSets values
+// main -> production -> java/resources
+// test -> test -> java/resources
+// each time you change it, you need click the 'refresh' button to reload the gradle property file
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources{
+            srcDirs = ['resources', 'src']
+            include "**/*.xml"
+            include "**/*.properties"
+            exclude "**/*.java"
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['test']
+        }
+        resources{
+            srcDirs = ['test']
+        }
+    }
+}
+
+// if your gradle project is not standard and your web root is different
+// please change the path here
+// important: YOU MUST APPLY PLUGIN 'war' FIRST
+webAppDirName = 'WebRoot'
+
+task packageJar(type: Jar) {
+    archiveName = project.name + '.jar'
+    from ('build/classes/main', 'build/resources/main')
+    includeEmptyDirs = true
+}
+
+//packageJar.dependsOn copyFiles
+
+task copyJar(type: Copy) {
+    from ('build/libs')
+    into 'local'
+    includeEmptyDirs = true
+}
+
+copyJar.dependsOn packageJar
+
+task deployJar(type: Copy) {
+    from ('build/libs')
+    into 'server'
+    includeEmptyDirs = true
+}
+
+deployJar.dependsOn packageJar
+
